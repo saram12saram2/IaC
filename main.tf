@@ -36,6 +36,8 @@ resource "digitalocean_droplet" "web" {
     timeout     = "2m"
   }
 
+  # быстрая установка nginx прямо через Terraform, чтобы что-то работало до Ansible, 
+  # не заменяет полноценную настройку Ansible
   provisioner "remote-exec" {
     inline = [
       "export PATH=$PATH:/usr/bin",
@@ -46,5 +48,6 @@ resource "digitalocean_droplet" "web" {
       "echo '<h1>Hello from Terraform!</h1>' | sudo tee /var/www/html/index.html"
     ]
   }
+
 }
 
