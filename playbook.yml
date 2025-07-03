@@ -1,0 +1,54 @@
+- name: Configure Web Server
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+    
+    - name: Install packages
+      apt:
+        name:
+          - nginx
+          - ufw
+          - curl
+          - git
+        state: present
+    
+    - name: Start and enable nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+    
+    - name: Configure firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+        - "22"
+        - "80"
+        - "443"
+    
+    - name: Enable firewall
+      ufw:
+        state: enabled
+    
+    - name: Create simple index page
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Configured with Ansible</title>
+          </head>
+          <body>
+              <h1>Server configured with Ansible!</h1>
+              <p>Nginx is running successfully.</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
